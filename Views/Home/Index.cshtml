@@ -1,0 +1,60 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="row">
+    <h1 class="text-center">Book Tracker</h1>
+    <hr />
+    <button class="btn btn-primary center-block" onclick="showModal()">Add Book</button>
+    <hr />
+    <table class="table">
+        <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Read?</th>
+            <!-- Extra empty headers so top border extends full width of table. -->
+            <th></th>
+            <th></th>
+        </tr>
+        <tbody>
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                <tr>
+                    <td>@Model[i].Title</td>
+                    <td>@Model[i].Author</td>
+                    <td>@(Model[i].Read ? "\u2713" : "-")</td>
+                    <td><button class="btn disabled" disabled>Update</button></td>
+                    <td>
+                        @using (Html.BeginForm("DeleteBook", "Home", new { index = i }))
+                        {
+                            <input type="submit" class="btn btn-danger" value="Delete"/>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="modal modal-hide">
+        <div class="modal-content text-center">
+            <h2 class="modal-title">Add Book</h2>
+            @using (Html.BeginForm("AddBook", "Home"))
+            {
+                @Html.AntiForgeryToken()
+                <div>
+                    <label htmlFor="title">Title: </label>
+                    <input id="title" name="title" />
+                </div>
+                <div>
+                    <label htmlFor="author">Author: </label>
+                    <input id="author" name="author" />
+                </div>
+                <div>
+                    <label htmlFor="read">Read?: </label>
+                    <input id="read" name="read" type="checkbox" value="true" />
+                </div>
+                <input type="submit" value="Add Book" />
+            }
+            <button class="modal-close-btn btn btn-danger" onclick="hideModal()">X</button>
+        </div>
+    </div>
+</div>
