@@ -10,47 +10,14 @@ namespace BookTracker.Controllers
 {
     /*
      * TODO: Store books in DB instead of Session.
-     *   Move the NonAction methods below to some other place (Like a DB layer?).
      *   Use Html.DisplayFor() and the rest in Index view.
      *   Add update button functionality.
      */
     public class HomeController : Controller
     {
-        private readonly List<Book> _books = new List<Book>
-        {
-            new Book { Title = "Test Book", Author = "Mr. Book", Read = true },
-            new Book { Title = "Test Two", Author = "Mr. Book", Read = false },
-        };
-
-        [NonAction]
-        private List<Book> GetAllBooks()
-        {
-            if (!(Session["books"] is List<Book> books))
-            {
-                books = _books;
-                Session["books"] = _books;
-            }
-
-            return books;
-        }
-
-        [NonAction]
-        private void AddANewBook(Book newBook)
-        {
-            List<Book> books = GetAllBooks();
-            books.Add(newBook);
-        }
-
-        [NonAction]
-        private void DeleteABook(int index)
-        {
-            List<Book> books = GetAllBooks();
-            books.RemoveAt(index);
-        }
-
         public ActionResult Index()
         {
-            List<Book> books = GetAllBooks(); 
+            List<Book> books = DAL.BookTrackerStore.GetAllBooks(Session);
 
             return View(books);
         }
@@ -59,7 +26,7 @@ namespace BookTracker.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult AddBook(Book newBook)
         {
-            AddANewBook(newBook);
+            DAL.BookTrackerStore.AddBook(Session, newBook);
 
             return RedirectToAction("Index");
         }
@@ -67,7 +34,7 @@ namespace BookTracker.Controllers
         [HttpPost]
         public ActionResult DeleteBook(int index)
         {
-            DeleteABook(index);
+            DAL.BookTrackerStore.DeleteBook(Session, index);
 
             return RedirectToAction("Index");
         }
